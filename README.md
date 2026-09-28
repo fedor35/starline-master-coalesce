@@ -30,7 +30,7 @@ StarLine Master (проверено на 3.10.5 и 3.11.4, linux64) при пр�
 ## Установка
 
 Arch Linux — готовый пакет из [Releases](https://github.com/fedor35/starline-master-coalesce/releases)
-(собирается GitHub Actions на каждый тег; в AUR пакета нет, регистрация там закрыта):
+(собирается GitHub Actions на каждый тег):
 
 ```sh
 sudo pacman -U https://github.com/fedor35/starline-master-coalesce/releases/latest/download/starline-master-coalesce-1.0.1-1-x86_64.pkg.tar.zst
@@ -39,7 +39,7 @@ sudo pacman -U https://github.com/fedor35/starline-master-coalesce/releases/late
 Или собрать самому из PKGBUILD:
 
 ```sh
-git clone https://github.com/fedor35/starline-master-coalesce && cd starline-master-coalesce/aur && makepkg -si
+git clone https://github.com/fedor35/starline-master-coalesce && cd starline-master-coalesce/arch && makepkg -si
 ```
 
 Вручную:
@@ -72,6 +72,8 @@ starline-master-coalesce
 
 ## Как прошивать A93 v2 через CP2102
 
+![Разъёмы центрального блока A93 v2: X8 (пины 1 и 5) и X2 (GND, +12V)](doc/a93v2_connectors.jpg)
+
 1. Питание блока по X2 (1 — +12 В, 2 — масса).
 2. X8: пин 3 — GND, пин 4 — TXD адаптера, пин 5 — RXD адаптера. Пин 2 (+12 В) не подключать.
 3. Перемычка **пин 1 (BOOT) → GND** на всю сессию прошивки. Пин читается только при сбросе,
@@ -95,6 +97,6 @@ chunks, so Master reports "Failed to switch mode, check 12 V supply". The shim
 intercepts `read()` on `/dev/ttyUSB*` / `/dev/ttyACM*`, waits for a short silence gap
 (`COALESCE_GAP_MS`, 8 ms; cap `COALESCE_MAX_MS`, 120 ms) and returns the whole burst.
 
-Install the prebuilt package from GitHub Releases (`pacman -U <url>`), build it with `makepkg -si` from `aur/`, or `make && sudo make install`, unpack the
+Install the prebuilt package from GitHub Releases (`pacman -U <url>`), build it with `makepkg -si` from `arch/`, or `make && sudo make install`, unpack the
 linux64 Master build into `~/starline-master` (or set `STARLINE_MASTER`), then run
 `starline-master-coalesce`. Verified on A93 v2 (SA04), U3 → U8, 2026-09-27.

@@ -95,6 +95,10 @@ starline-master-coalesce
 3. `starline-master-coalesce`, порт `/dev/ttyUSB0`, «Обновить прошивку».
 4. После прошивки снять перемычку, передёрнуть питание, восстановить настройки из `.slc`.
 
+Пример настроек: `examples/A93V2_SA04_U8_example.slc` — рабочая конфигурация A93 v2 (SA04, U8)
+после прошивки, рядом `examples/A93V2_SA04_U8_example.xml` — то же в распакованном виде. Формат `.slc`:
+4 байта префикса (длина XML, big-endian) + zlib-поток с XML `mainSchema`, 206 полей `<field name= value=>`.
+
 Прослойка решает только проблему сборки баннера. Она не заменяет штатный
 программатор и не снимает риск ошибок при прошивке: делайте резервную копию настроек.
 
@@ -137,6 +141,10 @@ Steps:
    bootloader and the application, so keep the jumper in for the whole session.
 3. Run `starline-master-coalesce`, pick `/dev/ttyUSB0`, choose "Update firmware".
 4. Afterwards remove the jumper, power-cycle the unit and restore the settings from `.slc`.
+
+Example settings: `examples/A93V2_SA04_U8_example.slc` is a working A93 v2 (SA04, U8) configuration
+after the update; `examples/A93V2_SA04_U8_example.xml` is the same file decoded. `.slc` format:
+4-byte prefix (XML length, big-endian) + zlib stream with the `mainSchema` XML, 206 `<field name= value=>` entries.
 
 The shim only fixes banner reassembly. It is not a substitute for the official
 programmer and does not remove the risk of a failed flash: back up your settings first.

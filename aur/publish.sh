@@ -4,6 +4,7 @@
 #        на GitHub уже создан пустой репозиторий <user>/starline-master-coalesce.
 # Использование: aur/publish.sh <github-user>
 set -e
+# GitHub уже опубликован 28.09.2026; скрипт идемпотентен, повторный запуск пушит только AUR-часть.
 USER=${1:?github user}
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
 cd "$ROOT"

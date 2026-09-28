@@ -9,7 +9,7 @@ license=('MIT')
 depends=('glibc' 'procps-ng')
 optdepends=('wayland: StarLine Master runs with QT_QPA_PLATFORM=wayland')
 source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz")
-sha256sums=('cb209dfd00bbb1943c1e196d52c11e04206e14df4973b7671840f6c4cb033587')
+sha256sums=('d82a3fda7f1d2dd5148fb83224c39e48101bb17fdee3cba66f9788c7b86c0781')
 
 build() {
   cd "$pkgname-$pkgver"

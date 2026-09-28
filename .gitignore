@@ -1,0 +1,6 @@
+*.so
+*.o
+aur/*.tar.*
+aur/pkg/
+aur/src/
+aur/*.pkg.tar.*

@@ -1,0 +1,23 @@
+# Maintainer: Fedor <writesfaster@gmail.com>
+pkgname=starline-master-coalesce
+pkgver=1.0.0
+pkgrel=1
+pkgdesc="LD_PRELOAD shim that lets StarLine Master (Linux) flash StarLine units through a CP2102 USB-UART adapter"
+arch=('x86_64')
+url="https://github.com/GITHUB_USER/starline-master-coalesce"
+license=('MIT')
+depends=('glibc' 'procps-ng')
+optdepends=('wayland: StarLine Master runs with QT_QPA_PLATFORM=wayland')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz")
+sha256sums=('SKIP')
+
+build() {
+  cd "$pkgname-$pkgver"
+  make CFLAGS="$CFLAGS -fPIC" LDFLAGS="$LDFLAGS"
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  make DESTDIR="$pkgdir" PREFIX=/usr install
+  install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

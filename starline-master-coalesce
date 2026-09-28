@@ -1,0 +1,22 @@
+#!/bin/sh
+# Запуск StarLine Master с прослойкой склейки чтений UART (LD_PRELOAD).
+# Нужна для прошивки блоков StarLine через переходник CP2102 под Linux.
+#
+# Где искать Мастер: $STARLINE_MASTER, иначе ~/starline-master, иначе /opt/starline-master.
+# Переменные прослойки: COALESCE_GAP_MS (пауза, 8), COALESCE_MAX_MS (потолок, 120), COALESCE_DEBUG=1.
+set -e
+LIB=/usr/lib/starline-master-coalesce/coalesce_read.so
+for d in "$STARLINE_MASTER" "$HOME/starline-master" /opt/starline-master; do
+    [ -n "$d" ] && [ -x "$d/StarLine-Master.sh" ] && MASTER=$d && break
+done
+if [ -z "$MASTER" ]; then
+    echo "StarLine Master не найден. Распакуйте linux64-сборку и задайте STARLINE_MASTER=/путь" >&2
+    exit 1
+fi
+# Мастер после закрытия окна оставляет процесс, держащий /dev/ttyUSB* — добиваем.
+if pgrep -x StarLine-Master >/dev/null 2>&1; then
+    pkill -x StarLine-Master || true
+    sleep 1
+fi
+cd "$MASTER"
+LD_PRELOAD="$LIB${LD_PRELOAD:+:$LD_PRELOAD}" exec ./StarLine-Master.sh "$@"

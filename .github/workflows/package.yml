@@ -1,0 +1,29 @@
+name: package
+on:
+  push:
+    tags: ['v*']
+permissions:
+  contents: write
+jobs:
+  arch:
+    runs-on: ubuntu-latest
+    container: archlinux:base-devel
+    steps:
+      - run: |
+          pacman -Syu --noconfirm --needed git
+          git config --global --add safe.directory '*'
+          useradd -m builder
+      - uses: actions/checkout@v4
+      - name: makepkg
+        run: |
+          V=${GITHUB_REF_NAME#v}
+          git archive --prefix=starline-master-coalesce-$V/ HEAD | gzip > aur/starline-master-coalesce-$V.tar.gz
+          cd aur
+          sed -i "s|^pkgver=.*|pkgver=$V|; s|^source=.*|source=(\"starline-master-coalesce-$V.tar.gz\")|; s|^sha256sums=.*|sha256sums=('SKIP')|" PKGBUILD
+          chown -R builder .
+          su builder -c 'makepkg -f --noconfirm'
+          ls -l *.pkg.tar.zst
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: aur/*.pkg.tar.zst
+          generate_release_notes: true

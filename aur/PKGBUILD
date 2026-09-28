@@ -1,6 +1,6 @@
 # Maintainer: Fedor <writesfaster@gmail.com>
 pkgname=starline-master-coalesce
-pkgver=1.0.0
+pkgver=1.0.1
 pkgrel=1
 pkgdesc="LD_PRELOAD shim that lets StarLine Master (Linux) flash StarLine units through a CP2102 USB-UART adapter"
 arch=('x86_64')

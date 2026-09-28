@@ -114,3 +114,29 @@ intercepts `read()` on `/dev/ttyUSB*` / `/dev/ttyACM*`, waits for a short silenc
 Install the prebuilt package from GitHub Releases (`pacman -U <url>`), build it with `makepkg -si` from `arch/`, or `make && sudo make install`, unpack the
 linux64 Master build into `~/starline-master` (or set `STARLINE_MASTER`), then run
 `starline-master-coalesce`. Verified on A93 v2 (SA04), U3 → U8, 2026-09-27.
+
+### Flashing A93 v2 through CP2102
+
+Connector X8 (transceiver), pin numbering as on the photo above:
+
+| X8 pin | Function                  | Connection                                              |
+|:------:|---------------------------|---------------------------------------------------------|
+| 1      | BOOT                      | ⏚ jumper 1 → 3 (to GND) for the whole flashing session  |
+| 2      | +12 V (antenna supply)    | ✗ **do not connect**                                    |
+| 3      | GND                       | adapter GND + the other end of the jumper from pin 1    |
+| 4      | unit RX                   | adapter TXD                                             |
+| 5      | unit TX (+5 V idle)       | adapter RXD                                             |
+
+Connector X2 (power): pin 1 — +12 V, pin 2 — ground.
+
+Steps:
+
+1. Power the unit through X2.
+2. Connect the adapter to X8: GND, TXD, RXD (pins 3, 4, 5) and fit the jumper 1 → 3.
+   The BOOT pin is sampled only at reset; Master itself switches the unit between the
+   bootloader and the application, so keep the jumper in for the whole session.
+3. Run `starline-master-coalesce`, pick `/dev/ttyUSB0`, choose "Update firmware".
+4. Afterwards remove the jumper, power-cycle the unit and restore the settings from `.slc`.
+
+The shim only fixes banner reassembly. It is not a substitute for the official
+programmer and does not remove the risk of a failed flash: back up your settings first.

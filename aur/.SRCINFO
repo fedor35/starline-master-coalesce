@@ -2,13 +2,13 @@ pkgbase = starline-master-coalesce
 	pkgdesc = LD_PRELOAD shim that lets StarLine Master (Linux) flash StarLine units through a CP2102 USB-UART adapter
 	pkgver = 1.0.0
 	pkgrel = 1
-	url = https://github.com/GITHUB_USER/starline-master-coalesce
+	url = https://github.com/fedor35/starline-master-coalesce
 	arch = x86_64
 	license = MIT
 	depends = glibc
 	depends = procps-ng
 	optdepends = wayland: StarLine Master runs with QT_QPA_PLATFORM=wayland
-	source = starline-master-coalesce-1.0.0.tar.gz::https://github.com/GITHUB_USER/starline-master-coalesce/archive/refs/tags/v1.0.0.tar.gz
-	sha256sums = SKIP
+	source = starline-master-coalesce-1.0.0.tar.gz::https://github.com/fedor35/starline-master-coalesce/archive/refs/tags/v1.0.0.tar.gz
+	sha256sums = cb209dfd00bbb1943c1e196d52c11e04206e14df4973b7671840f6c4cb033587
 
 pkgname = starline-master-coalesce

@@ -4,7 +4,7 @@ pkgbase = starline-master-coalesce
 	pkgrel = 1
 	url = https://github.com/fedor35/starline-master-coalesce
 	arch = x86_64
-	license = MIT
+	license = AGPL-3.0-or-later
 	depends = glibc
 	depends = procps-ng
 	optdepends = wayland: StarLine Master runs with QT_QPA_PLATFORM=wayland

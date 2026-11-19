@@ -25,7 +25,12 @@ StarLine Master (проверено на 3.10.5 и 3.11.4, linux64) при пр�
 и досыпает всё, что пришло за это время, в тот же буфер. Для остальных дескрипторов
 поведение не меняется.
 
-Проверено 27.09.2026: A93 v2 (SA04) прошит U3 → U8 через самодельный CP2102-переходник.
+## Состояние
+
+Версия 1.0.1. Проверено 27.09.2026 на StarLine Master linux64 3.10.5 / 3.11.4: A93 v2 (SA04)
+прошит U3 → U8 через самодельный CP2102-переходник, настройки восстановлены из `.slc`.
+Другие блоки и адаптеры не проверялись. Скриншоты интерфейса Мастера не приложены; в репозитории
+только фото разъёмов блока (`doc/a93v2_connectors_x8.jpg`).
 
 ## Установка
 
@@ -58,6 +63,10 @@ sudo make install        # PREFIX=/usr по умолчанию
 starline-master-coalesce
 ```
 
+Из исходников, без установки в систему: после `make` запустите `./run_master.sh`. Скрипт берёт
+`coalesce_read.so` из своего каталога, Мастер ищет в `$MASTER` (по умолчанию `~/starline-master`),
+гасит висящий `StarLine-Master` и стартует `StarLine-Master.sh` с `LD_PRELOAD`.
+
 Обёртка находит Мастер (`$STARLINE_MASTER`, `~/starline-master`, `/opt/starline-master`),
 добивает висящий процесс `StarLine-Master`, который держит порт после закрытия окна,
 и запускает `StarLine-Master.sh` с `LD_PRELOAD`.
@@ -69,6 +78,34 @@ starline-master-coalesce
 | `COALESCE_GAP_MS`  | 8            | пауза в линии, завершающая пакет          |
 | `COALESCE_MAX_MS`  | 120          | максимальное удержание одного `read()`    |
 | `COALESCE_DEBUG`   | 0            | 1 — печатать размер каждого чтения в stderr |
+
+## Проверка без блока прошивки
+
+`banner_test.py` открывает `/dev/ttyUSB0` (115200 8N1), отправляет байт `0x50` и печатает размер
+и содержимое каждого `read()` в течение секунды. Блок должен быть в загрузчике (перемычка BOOT, питание).
+Сравните вывод без прослойки и с ней:
+
+```sh
+python3 banner_test.py
+LD_PRELOAD=$PWD/coalesce_read.so python3 banner_test.py
+```
+
+Без прослойки баннер приходит кусками, с ней — одним чтением. Порт в скрипте задан жёстко.
+`COALESCE_DEBUG=1` печатает размеры чтений прослойки в stderr.
+
+## Состав репозитория
+
+| Путь | Что это |
+|------|---------|
+| `coalesce_read.c` | исходник прослойки (`read()` на `/dev/ttyUSB*`, `/dev/ttyACM*`) |
+| `Makefile` | цели `all` (по умолчанию), `install`, `clean`; `PREFIX`, `DESTDIR` |
+| `starline-master-coalesce` | обёртка, устанавливается в `$PREFIX/bin` |
+| `run_master.sh` | запуск из дерева исходников (без установки) |
+| `banner_test.py` | проверка приёма баннера загрузчика |
+| `arch/PKGBUILD` | пакет для Arch Linux |
+| `.github/` | сборка пакета в GitHub Actions по тегу `v*` |
+| `doc/` | фото разъёмов A93 v2 (X8, X2) |
+| `examples/` | настройки A93 v2 (SA04, U8): `.slc` и расшифрованный `.xml` |
 
 ## Как прошивать A93 v2 через CP2102
 
@@ -102,6 +139,10 @@ starline-master-coalesce
 Прослойка решает только проблему сборки баннера. Она не заменяет штатный
 программатор и не снимает риск ошибок при прошивке: делайте резервную копию настроек.
 
+## Лицензия
+
+AGPL-3.0-or-later, см. [LICENSE](LICENSE).
+
 ---
 
 ## English
@@ -114,6 +155,13 @@ banner in a **single `read()`**. The Linux `cp210x` driver delivers it in 1–8 
 chunks, so Master reports "Failed to switch mode, check 12 V supply". The shim
 intercepts `read()` on `/dev/ttyUSB*` / `/dev/ttyACM*`, waits for a short silence gap
 (`COALESCE_GAP_MS`, 8 ms; cap `COALESCE_MAX_MS`, 120 ms) and returns the whole burst.
+
+Status: version 1.0.1; the only verified setup is the one above. No screenshots of Master are
+included, only the connector photo in `doc/`. From a source tree, `make` then `./run_master.sh`
+(uses `$MASTER`, default `~/starline-master`). `banner_test.py` reads the bootloader banner from
+`/dev/ttyUSB0` and prints each `read()`; compare with and without
+`LD_PRELOAD=$PWD/coalesce_read.so`. Layout: `coalesce_read.c`, `Makefile`, `starline-master-coalesce`
+(wrapper), `run_master.sh`, `banner_test.py`, `arch/PKGBUILD`, `doc/`, `examples/`.
 
 Install the prebuilt package from GitHub Releases (`pacman -U <url>`), build it with `makepkg -si` from `arch/`, or `make && sudo make install`, unpack the
 linux64 Master build into `~/starline-master` (or set `STARLINE_MASTER`), then run
@@ -148,3 +196,5 @@ after the update; `examples/A93V2_SA04_U8_example.xml` is the same file decoded.
 
 The shim only fixes banner reassembly. It is not a substitute for the official
 programmer and does not remove the risk of a failed flash: back up your settings first.
+
+License: AGPL-3.0-or-later, see [LICENSE](LICENSE).
